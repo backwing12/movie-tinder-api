@@ -19,3 +19,17 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# Kotlin compiler cache
+.kotlin/
+
+# Editors
+.idea/
+*.iml
+.vscode/
+out/
+
+# Local secrets and settings (never commit)
+.env
+.env.*
+local.properties

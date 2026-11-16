@@ -1,0 +1,7 @@
+ktor:
+  deployment:
+    port: 8080
+  application:
+    modules:
+      - dev.backwing.SerializationKt.configureSerialization
+      - dev.backwing.RoutingKt.configureRouting
