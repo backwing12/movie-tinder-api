@@ -34,12 +34,12 @@ Selve koden holdes enkel. Det er driften rundt den som er poenget. Prosjektet er
 ## Uke for uke
 
 ### Uke 47 (16.–22. nov): Grunnmur
-- [ ] Opprette repo i C:\Kode og på GitHub, med README, .gitignore og denne planen
-- [ ] Skrive CLAUDE.md med arbeidsreglene over
-- [ ] Ktor-prosjekt med Gradle som svarer på `GET /health`
-- [ ] Første test som sjekker at `/health` svarer 200
-- [ ] Dockerfile, og kjøre appen i en container lokalt (Docker Desktop)
-- [ ] GitHub Actions som bygger og tester ved hver push
+- [x] Opprette repo i C:\Kode og på GitHub, med README, .gitignore og denne planen
+- [x] Skrive CLAUDE.md med arbeidsreglene over
+- [x] Ktor-prosjekt med Gradle som svarer på `GET /health`
+- [x] Første test som sjekker at `/health` svarer 200
+- [x] Dockerfile, og kjøre appen i en container lokalt (Docker Desktop)
+- [x] GitHub Actions som bygger og tester ved hver push
 
 **Ferdig når:** `docker run` starter appen lokalt, og GitHub viser grønn hake på siste commit.
 

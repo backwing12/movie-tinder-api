@@ -1,0 +1,12 @@
+# Steg 1: bygg appen
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /app
+COPY . .
+RUN ./gradlew buildFatJar --no-daemon
+
+# Steg 2: kjør appen
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/build/libs/*-all.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
