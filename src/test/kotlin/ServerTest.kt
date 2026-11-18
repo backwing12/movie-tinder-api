@@ -20,4 +20,10 @@ class ServerTest {
         configure()
         assertEquals(HttpStatusCode.OK, client.get("/health").status)
     }
+    
+    @Test
+    fun `invalid movie id returns 400`() = testApplication {
+        configure()
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/abc").status)
+    }
 }
