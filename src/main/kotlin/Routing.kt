@@ -10,9 +10,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlin.coroutines.cancellation.CancellationException
 
-fun Application.configureRouting() {
+fun Application.configureRouting(client: HttpClient = HttpClient(CIO)) {
     val apiKey = environment.config.property("tmdb.apiKey").getString()
-    val client = HttpClient(CIO)
     routing {
         get("/") {
             call.respondText("Hello, World!")
