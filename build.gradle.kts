@@ -22,6 +22,9 @@ dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
     implementation(libs.logback.classic)
+    implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.cio)
+    implementation(ktorLibs.client.contentNegotiation)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

@@ -5,3 +5,5 @@ ktor:
     modules:
       - dev.backwing.SerializationKt.configureSerialization
       - dev.backwing.RoutingKt.configureRouting
+tmdb:
+  apiKey: "$TMDB_API_KEY:"
