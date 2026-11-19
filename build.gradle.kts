@@ -25,6 +25,7 @@ dependencies {
     implementation(ktorLibs.client.core)
     implementation(ktorLibs.client.cio)
     implementation(ktorLibs.client.contentNegotiation)
+    implementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

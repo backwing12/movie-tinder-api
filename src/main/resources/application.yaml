@@ -7,3 +7,8 @@ ktor:
       - dev.backwing.RoutingKt.configureRouting
 tmdb:
   apiKey: "$TMDB_API_KEY:"
+
+database:
+  url: "jdbc:sqlserver://localhost:1433;databaseName=movietinder;encrypt=true;trustServerCertificate=true"
+  user: "sa"
+  password: "$DB_PASSWORD:"

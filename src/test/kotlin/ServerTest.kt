@@ -38,7 +38,7 @@ class ServerTest {
         }
         application {
             configureSerialization()       
-            configureRouting(HttpClient(MockEngine { respond("", HttpStatusCode.NotFound) }))
+            configureRouting(HttpClient(MockEngine { respond("", HttpStatusCode.NotFound) }), cache = null)
         }
         assertEquals(HttpStatusCode.NotFound, client.get("/movies/123").status)
     }
@@ -50,7 +50,7 @@ class ServerTest {
         }
         application {
             configureSerialization()       
-            configureRouting(HttpClient(MockEngine { throw IOException("TMDB is down") }))
+            configureRouting(HttpClient(MockEngine { throw IOException("TMDB is down") }), cache = null)
         }
         assertEquals(HttpStatusCode.BadGateway, client.get("/movies/500").status)
     }
