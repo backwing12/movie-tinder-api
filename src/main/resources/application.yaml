@@ -12,3 +12,6 @@ database:
   url: "jdbc:sqlserver://localhost:1433;databaseName=movietinder;encrypt=true;trustServerCertificate=true"
   user: "sa"
   password: "$DB_PASSWORD:"
+
+cache:
+  ttlHours: "$CACHE_TTL_HOURS:24"

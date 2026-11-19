@@ -17,7 +17,8 @@ fun Application.configureRouting(
     cache: MovieCache? = MovieCache(
         environment.config.property("database.url").getString(),
         environment.config.property("database.user").getString(),
-        environment.config.property("database.password").getString()
+        environment.config.property("database.password").getString(),
+        environment.config.property("cache.ttlHours").getString().toLong()
     )
 ) {
     val apiKey = environment.config.property("tmdb.apiKey").getString()

@@ -5,14 +5,15 @@ import java.sql.DriverManager
 class MovieCache(
     private val url: String,
     private val user: String,
-    private val password: String
+    private val password: String,
+    private val ttlHours: Long
 ) {
     fun get(id: Int): String? {
         DriverManager.getConnection(url, user, password).use { conn ->
             conn.prepareStatement("SELECT response_json FROM movie_cache WHERE tmdb_id = ? AND fetched_at > ?")
                 .use { stmt ->
                     stmt.setInt(1, id)
-                    stmt.setObject(2, java.time.LocalDateTime.now().minusHours(24))
+                    stmt.setObject(2, java.time.LocalDateTime.now().minusHours(ttlHours))
                     stmt.executeQuery().use { result ->
                         return if (result.next()) result.getString("response_json") else null
                     }
