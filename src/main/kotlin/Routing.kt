@@ -8,6 +8,8 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
 fun Application.configureRouting(
@@ -35,6 +37,12 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid movie ID"))
                 return@get
             }
+            val cached = withContext(Dispatchers.IO) { cache?.get(id) }
+            if (cached != null) {
+                call.respondText(cached, ContentType.Application.Json)
+                return@get
+            }
+
             try {
                 val response = client.get("https://api.themoviedb.org/3/movie/$id") {
                     parameter("api_key", apiKey)
@@ -47,7 +55,9 @@ fun Application.configureRouting(
                     call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movie from TMDB"))
                     return@get
                 } 
-                call.respondText(response.bodyAsText(), ContentType.Application.Json, response.status)
+                val body = response.bodyAsText()
+                withContext(Dispatchers.IO) { cache?.put(id, body) }
+                call.respondText(body, ContentType.Application.Json, response.status)
                 
             } catch (e: CancellationException) {
                 throw e
