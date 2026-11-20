@@ -7,6 +7,7 @@ import io.ktor.server.testing.testApplication
 import kotlin.test.*
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.*
+import io.ktor.client.statement.bodyAsText
 import java.io.IOException
 
 class ServerTest {
@@ -53,5 +54,22 @@ class ServerTest {
             configureRouting(HttpClient(MockEngine { throw IOException("TMDB is down") }), cache = null)
         }
         assertEquals(HttpStatusCode.BadGateway, client.get("/movies/500").status)
+    }
+    
+    @Test
+    fun `cache database down still returns movie from TMDB`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        application {
+            configureSerialization()
+            configureRouting(
+                HttpClient(MockEngine { respond("""{"id":550,"title":"Fight Club"}""", HttpStatusCode.OK) }),
+                cache = MovieCache("jdbc:finnes-ikke", "sa", "x", 24)
+            )
+        }
+        val response = client.get("/movies/550")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertTrue(response.bodyAsText().contains("Fight Club"))
     }
 }
