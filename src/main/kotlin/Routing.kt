@@ -38,7 +38,13 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid movie ID"))
                 return@get
             }
-            val cached = withContext(Dispatchers.IO) { cache?.get(id) }
+            val cached = try {
+                withContext(Dispatchers.IO) { cache?.get(id) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
             if (cached != null) {
                 call.respondText(cached, ContentType.Application.Json)
                 return@get
@@ -51,21 +57,25 @@ fun Application.configureRouting(
                 if (response.status == HttpStatusCode.NotFound) {
                     call.respond(HttpStatusCode.NotFound, mapOf("error" to "Movie not found"))
                     return@get
-                } 
+                }
                 if (!response.status.isSuccess()) {
                     call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movie from TMDB"))
                     return@get
-                } 
+                }
                 val body = response.bodyAsText()
-                withContext(Dispatchers.IO) { cache?.put(id, body) }
+                try {
+                    withContext(Dispatchers.IO) { cache?.put(id, body) }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // lagring feilet, men vi har filmen, så vi gjør ingenting
+                }
                 call.respondText(body, ContentType.Application.Json, response.status)
-                
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movie from TMDB"))
             }
-            
         }
     }
 }
