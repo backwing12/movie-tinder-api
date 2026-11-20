@@ -32,4 +32,5 @@ out/
 # Local secrets and settings (never commit)
 .env
 .env.*
+!.env.example
 local.properties
