@@ -77,5 +77,22 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movie from TMDB"))
             }
         }
+        get("/movies/popular") {
+            try {
+                val response = client.get("https://api.themoviedb.org/3/movie/popular") {
+                    parameter("api_key", apiKey)
+                }
+                if (!response.status.isSuccess()) {
+                    call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movies from TMDB"))
+                    return@get
+                }
+                val body = response.bodyAsText()
+                call.respondText(body, ContentType.Application.Json, response.status)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movies from TMDB"))
+            }
+        }
     }
 }
