@@ -72,4 +72,30 @@ class ServerTest {
         assertEquals(HttpStatusCode.OK, response.status)
         assertTrue(response.bodyAsText().contains("Fight Club"))
     }
+    
+    @Test
+    fun `invalid page returns 400`() = testApplication { 
+        configure()
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?page=abc").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?page=0").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?page=600").status)
+    }
+    
+    @Test
+    fun `valid page returns movies from TMDB`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { respond("""{"page":3,"results":[]}""", HttpStatusCode.OK) }),
+                cache = null
+            )
+        }
+        val response = client.get("/movies/search?page=3")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertTrue(response.bodyAsText().contains(""""page":3"""))
+    }
+    
 }
