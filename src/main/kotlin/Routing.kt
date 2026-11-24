@@ -77,9 +77,10 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movie from TMDB"))
             }
         }
-        get("/movies/popular") {
+        get("/movies/search") {
             try {
-                val response = client.get("https://api.themoviedb.org/3/movie/popular") {
+                call.request.queryParameters["page"]
+                val response = client.get("https://api.themoviedb.org/3/discover/movie") {
                     parameter("api_key", apiKey)
                 }
                 if (!response.status.isSuccess()) {
