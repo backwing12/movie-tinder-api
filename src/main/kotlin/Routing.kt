@@ -10,6 +10,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import kotlin.coroutines.cancellation.CancellationException
 
 fun Application.configureRouting(
@@ -87,6 +88,10 @@ fun Application.configureRouting(
             val endDate = if (decade == null) null else "${decade+9}-12-31"
             if (page == null || page < 1 || page > 500) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Page must be between 1 and 500"))
+                return@get
+            }
+            if (decadeText != null && (decade == null || decade % 10 != 0 || decade < 1900 || decade > LocalDate.now().year + 10)) {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Decade must be a year ending in 0 from 1900 up to the next decade"))
                 return@get
             }
             try {
