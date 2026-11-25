@@ -86,6 +86,7 @@ fun Application.configureRouting(
             val decade = decadeText?.toIntOrNull()
             val startDate = if (decade == null) null else "$decade-01-01"
             val endDate = if (decade == null) null else "${decade+9}-12-31"
+            val language = call.request.queryParameters["language"]
             if (page == null || page < 1 || page > 500) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Page must be between 1 and 500"))
                 return@get
@@ -101,6 +102,7 @@ fun Application.configureRouting(
                     parameter("with_genres", genre)
                     parameter("primary_release_date.gte", startDate)
                     parameter("primary_release_date.lte", endDate)
+                    parameter("with_original_language", language)
                 }
                 if (!response.status.isSuccess()) {
                     call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movies from TMDB"))

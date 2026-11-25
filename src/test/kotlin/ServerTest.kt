@@ -148,4 +148,24 @@ class ServerTest {
         assertEquals("1980-01-01", sentStartDate)
         assertEquals("1989-12-31", sentEndDate)
     }
+    
+    @Test
+    fun `language is sent to TMDB as with_original_language`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        var sentLanguage: String? = null
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { request ->
+                    sentLanguage = request.url.parameters["with_original_language"]
+                    respond("""{"page":1, "results":[]}""", HttpStatusCode.OK) 
+                }),
+                cache = null
+            ) 
+        }
+        client.get("/movies/search?language=ko")
+        assertEquals("ko", sentLanguage)
+    }
 }
