@@ -116,6 +116,36 @@ class ServerTest {
         }
         client.get("/movies/search?genre=27")
         assertEquals("27", sentGenre)
-
+    }
+    
+    @Test
+    fun `invalid decade returns 400`() = testApplication {
+        configure()
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?decade=1985").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?decade=abc").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?decade=2040").status)
+    }
+    
+    @Test
+    fun `decade is sent to TMDB as release date range`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        var sentStartDate: String? = null
+        var sentEndDate: String? = null
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { request ->
+                    sentStartDate = request.url.parameters["primary_release_date.gte"]
+                    sentEndDate = request.url.parameters["primary_release_date.lte"]
+                    respond("""{"page":1, "results":[]}""", HttpStatusCode.OK) 
+                }),
+                cache = null
+            ) 
+        }
+        client.get("/movies/search?decade=1980")
+        assertEquals("1980-01-01", sentStartDate)
+        assertEquals("1989-12-31", sentEndDate)
     }
 }
