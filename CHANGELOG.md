@@ -6,6 +6,12 @@ The project has no versioned releases yet, so entries are grouped by date.
 
 ## [Unreleased]
 
+## 2026-11-24
+### Added
+- `GET /movies/search` endpoint that proxies TMDB's `discover/movie`, with an optional `page` query parameter (defaults to 1).
+- Validation of `page`: values that are not a number, or outside 1–500 (TMDB's limit), return 400.
+- Tests for valid and invalid pages, using a mocked TMDB client.
+
 ## 2026-11-20
 ### Added
 - `docker-compose.yml` that starts the API and SQL Server together, with a named volume so cached data survives restarts.

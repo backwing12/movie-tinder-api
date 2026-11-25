@@ -98,4 +98,24 @@ class ServerTest {
         assertTrue(response.bodyAsText().contains(""""page":3"""))
     }
     
+    @Test
+    fun `genre is sent to TMDB as with_genres`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        var sentGenre: String? = null
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { request ->
+                    sentGenre = request.url.parameters["with_genres"]
+                    respond("""{"page":1, "results":[]}""", HttpStatusCode.OK) 
+                }),
+                cache = null
+            ) 
+        }
+        client.get("/movies/search?genre=27")
+        assertEquals("27", sentGenre)
+
+    }
 }

@@ -80,6 +80,7 @@ fun Application.configureRouting(
         get("/movies/search") {
             val pageText = call.request.queryParameters["page"]
             val page = if (pageText == null) 1 else pageText.toIntOrNull() 
+            val genre = call.request.queryParameters["genre"]
             if (page == null || page < 1 || page > 500) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Page must be between 1 and 500"))
                 return@get
@@ -88,6 +89,7 @@ fun Application.configureRouting(
                 val response = client.get("https://api.themoviedb.org/3/discover/movie") {
                     parameter("api_key", apiKey)
                     parameter("page", page)
+                    parameter("with_genres", genre)
                 }
                 if (!response.status.isSuccess()) {
                     call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movies from TMDB"))
