@@ -87,12 +87,24 @@ fun Application.configureRouting(
             val startDate = if (decade == null) null else "$decade-01-01"
             val endDate = if (decade == null) null else "${decade+9}-12-31"
             val language = call.request.queryParameters["language"]
+            val minRatingText = call.request.queryParameters["minRating"]
+            val minRating = minRatingText?.toDoubleOrNull()
+            val minVotesText = call.request.queryParameters["minVotes"]
+            val minVotes = minVotesText?.toIntOrNull()
             if (page == null || page < 1 || page > 500) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Page must be between 1 and 500"))
                 return@get
             }
             if (decadeText != null && (decade == null || decade % 10 != 0 || decade < 1900 || decade > LocalDate.now().year + 10)) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Decade must be a year ending in 0 from 1900 up to the next decade"))
+                return@get
+            }
+            if (minRatingText != null && (minRating == null || minRating !in 0.0..10.0)) {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Rating must be between 0 and 10"))
+                return@get
+            }
+            if (minVotesText != null && (minVotes == null || minVotes < 0)) {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Minimum votes must be a whole number, 0 or higher"))
                 return@get
             }
             try {
@@ -103,6 +115,8 @@ fun Application.configureRouting(
                     parameter("primary_release_date.gte", startDate)
                     parameter("primary_release_date.lte", endDate)
                     parameter("with_original_language", language)
+                    parameter("vote_average.gte", minRating)
+                    parameter("vote_count.gte", minVotes)
                 }
                 if (!response.status.isSuccess()) {
                     call.respond(HttpStatusCode.BadGateway, mapOf("error" to "Could not get movies from TMDB"))

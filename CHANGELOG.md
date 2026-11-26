@@ -6,6 +6,12 @@ The project has no versioned releases yet, so entries are grouped by date.
 
 ## [Unreleased]
 
+## 2026-11-25
+### Added
+- Filters in `/movies/search`, passed on to TMDB: `genre` (as `with_genres`), `decade` (as a release date range, e.g. 1980 gives 1980-01-01 to 1989-12-31) and `language` (as `with_original_language`). Filters can be combined.
+- Validation of `decade`: it must be a year ending in 0, from 1900 up to the next decade, otherwise 400. The upper limit follows the current year.
+- Tests that check what is sent to TMDB, using a mocked client that records the request.
+
 ## 2026-11-24
 ### Added
 - `GET /movies/search` endpoint that proxies TMDB's `discover/movie`, with an optional `page` query parameter (defaults to 1).
