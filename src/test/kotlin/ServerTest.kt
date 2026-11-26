@@ -168,4 +168,59 @@ class ServerTest {
         client.get("/movies/search?language=ko")
         assertEquals("ko", sentLanguage)
     }
+    
+    @Test
+    fun `minRating is sent to TMDB as vote_average_gte`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        var sentRating: String? = null
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { request ->
+                    sentRating = request.url.parameters["vote_average.gte"]
+                    respond("""{"page":1, "results":[]}""", HttpStatusCode.OK)
+                }),
+                cache = null
+            )
+        }
+        client.get("/movies/search?minRating=7.5")
+        assertEquals("7.5",sentRating)        
+    }
+       
+    @Test
+    fun `invalid minRating returns 400`() = testApplication {
+        configure()
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?minRating=abc").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?minRating=11").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?minRating=-1").status)
+    }
+    
+    @Test
+    fun `minVotes is sent to TMDB as vote_count_gte`() = testApplication {
+        environment {
+            config = MapApplicationConfig("tmdb.apiKey" to "test-key")
+        }
+        var sentMinVotes: String? = null
+        application {
+            configureSerialization()
+            configureRouting (
+                HttpClient(MockEngine { request ->
+                    sentMinVotes = request.url.parameters["vote_count.gte"]
+                    respond("""{"page":1, "results":[]}""", HttpStatusCode.OK)
+                }),
+                cache = null
+            )
+        }
+        client.get("/movies/search?minVotes=200")
+        assertEquals("200",sentMinVotes)          
+    }
+        
+    @Test
+    fun `invalid minVotes returns 400`() = testApplication {
+        configure()
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?minVotes=abc").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/movies/search?minVotes=-5").status)
+    }
 }
